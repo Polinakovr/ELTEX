@@ -1,0 +1,28 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Valgrind
+      run: sudo apt-get install -y valgrind
+
+    - name: Build and Test
+      run: |
+        cd 6
+        make
+        
+    - name: Check for Memory Leaks
+      run: |
+        cd 6
+        valgrind --leak-check=full --error-exitcode=1 ./your_executable_name
