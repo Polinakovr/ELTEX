@@ -35,7 +35,7 @@ void delete_abonent(size_t *i, Node **head, Node **tail)
 {
     char dir_name[10];
     char dir_secondname[10];
-    printf("Введите данные Имя и Фамилию, чтобы удалить абонента\n ");
+    printf("Введите данные имя и фамилию, чтобы удалить абонента\n ");
     printf("Имя\n ");
     scanf("%s", dir_name);
     printf("Фамилия\n ");
@@ -44,7 +44,7 @@ void delete_abonent(size_t *i, Node **head, Node **tail)
     while (current != NULL)
     {
         Node *t = current->next;
-    
+
         if (strcmp(current->value.name, dir_name) == 0)
 
             if (strcmp(current->value.second_name, dir_secondname) == 0)
@@ -68,8 +68,8 @@ void delete_abonent(size_t *i, Node **head, Node **tail)
                 }
 
                 free(current);
-               
-            } current=t;
+            }
+        current = t;
     }
     (*i)--;
 }
