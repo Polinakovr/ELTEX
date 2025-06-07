@@ -25,4 +25,4 @@ jobs:
     - name: Check for Memory Leaks
       run: |
         cd 6lab
-        valgrind --leak-check=full --error-exitcode=1 ./your_executable_name
+        valgrind --leak-check=full --error-exitcode=1 ./main
