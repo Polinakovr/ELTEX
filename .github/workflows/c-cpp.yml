@@ -1,23 +1,19 @@
-name: C/C++ CI
+name: Build C Project
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
+    - uses: actions/checkout@v3
+    
+    - name: Install compiler and make
+      run: sudo apt-get install -y build-essential
+      
+    - name: Build with Make
       run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+      
+    - name: Run program
+      run: ./main
