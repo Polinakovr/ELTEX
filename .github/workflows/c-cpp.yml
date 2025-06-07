@@ -19,10 +19,10 @@ jobs:
 
     - name: Build and Test
       run: |
-        cd 6
+        cd 6lab
         make
         
     - name: Check for Memory Leaks
       run: |
-        cd 6
+        cd 6lab
         valgrind --leak-check=full --error-exitcode=1 ./your_executable_name
