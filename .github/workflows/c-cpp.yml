@@ -26,3 +26,11 @@ jobs:
       run: |
         cd 6lab
         valgrind --leak-check=full --error-exitcode=1 ./main
+  
+    - name: Build and Test
+      run: |
+        cd 7lab
+        make
+        
+    
+        
