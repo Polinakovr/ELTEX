@@ -32,5 +32,20 @@ jobs:
         cd 7lab
         make
         
+     - name: Build and Test
+      run: |
+        cd 8lab
+        make
+
+    - name: Build and Test
+      run: |
+        cd 9lab/1ex
+        make
+    
+    -name: Build and Test
+      run: |
+        cd 9lab/2ex
+        make
+        
     
         
