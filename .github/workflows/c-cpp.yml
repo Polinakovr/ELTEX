@@ -16,7 +16,7 @@ jobs:
     - name: Install Valgrind
       run: sudo apt-get install -y valgrind
 
-    - name: Build and Test
+    - name: Build and Test 6lab
       run: |
         cd 6lab
         make
@@ -26,25 +26,22 @@ jobs:
         cd 6lab
         valgrind --leak-check=full --error-exitcode=1 ./main
   
-    - name: Build and Test
+    - name: Build and Test 7lab
       run: |
         cd 7lab
         make
         
-     - name: Build and Test
+    - name: Build and Test 8lab
       run: |
         cd 8lab
         make
 
-    - name: Build and Test
+    - name: Build and Test 9lab/1ex
       run: |
         cd 9lab/1ex
         make
     
-    -name: Build and Test
+    - name: Build and Test 9lab/2ex
       run: |
         cd 9lab/2ex
         make
-        
-    
-        
