@@ -12,7 +12,6 @@ int count(int c)
     int counter = 0;
     for (int i = c; i >= 0; i--)
     {
-
         int binary = (c >> i) & 1;
         if (binary == 1)
         {

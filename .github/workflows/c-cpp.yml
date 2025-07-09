@@ -6,52 +6,56 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  CC: gcc
+  CXX: g++
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        lab: ['6lab', '7lab', '8lab', '9lab/1ex', '9lab/2ex']
+    
     steps:
     - uses: actions/checkout@v4
-
-    - name: Install Valgrind
-      run: sudo apt-get install -y valgrind
-
-    - name: Build and Test 6lab
+    
+    - name: Install dependencies
       run: |
-        cd 6lab
+        sudo apt-get update
+        sudo apt-get install -y valgrind build-essential
+
+    - name: Build ${{ matrix.lab }}
+      run: |
+        cd ${{ matrix.lab }}
         make
         
-    - name: Check for Memory Leaks
+    - name: Run tests for ${{ matrix.lab }}
       run: |
-        cd 6lab
-        valgrind --leak-check=full --error-exitcode=1 ./main
-  
-    - name: Build and Test 7lab
-      run: |
-        cd 7lab
-        make
-    - name: Run automated tests
-      run: |
-        cd 7lab
-        echo -e "1\n5\n10\n5\n5" | ./main || true  
+        cd ${{ matrix.lab }}
+        case ${{ matrix.lab }} in
+          "6lab")
+            valgrind --leak-check=full --error-exitcode=1 ./main
+            ;;
+          "7lab")
+            echo -e "1\n5\n10\n5\n5" | ./main || true
+            ;;
+          "8lab")
+            echo -e "1\n5\n10\n5\n5" | ./calcul || true
+            ;;
+          "9lab/2ex")
+            echo -e "q\n" | ./test || true
+            ;;
+        esac
 
-    - name: Build and Test 8lab
+    - name: Clean build artifacts
+      if: always()
       run: |
-        cd 8lab
-        make
+        cd ${{ matrix.lab }}
+        make clean || true
 
-    - name: Run automated tests
+    - name: Check code formatting
       run: |
-        cd 8lab
-        echo -e "1\n5\n10\n5\n5" | ./calcul || true 
-
-    - name: Build and Test 9lab/1ex
-      run: |
-        cd 9lab/1ex
-        make
+       find . -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
     
-    - name: Build and Test 9lab/1ex
-      run: |
-        cd 9lab/2ex
-        make
-        echo -e "q\n" | ./test || true
+  

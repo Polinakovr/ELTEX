@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 int IsPassOk(void);
 int main(void)
 {
@@ -14,8 +14,8 @@ int main(void)
     }
     else
     {
-        printf("Access granted!\n"); 
-        // Строка для которой нужно выяснить адрес  
+        printf("Access granted!\n");
+        // Строка для которой нужно выяснить адрес
         /* адрес строчки 0x00000000004011d8.
         "A"*20 + b"\xd8\x11\x40\x00\x00\x00\x00\x00
        заполняем Pass(12 байт) и перезаписваем rbp(8 байт), + адрес возврата

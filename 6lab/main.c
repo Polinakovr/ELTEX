@@ -94,7 +94,6 @@ void look_abonent(Node **head)
 }
 void print(Node **head)
 {
-
     Node *current = (*head);
     while (current != NULL)
     {
@@ -107,33 +106,23 @@ void print(Node **head)
 }
 int main()
 {
-
     int x = 1;
     size_t i = 0;
     Node *head = NULL;
     Node *tail = NULL;
     while (x != 5 && x >= 1 && x <= 4)
     {
-        printf(" 1) Добавить абонента \n 2) Удалить абонента \n 3) Поиск абонентов по имени \n 4) Вывод всех записей \n 5) Выход");
+        printf(" 1) Добавить абонента \n 2) Удалить абонента \n 3) Поиск абонентов по имени \n 4) Вывод всех записей "
+               "\n 5) Выход");
         x = 0;
         scanf("\n %d", &x);
         switch (x)
         {
-        case 1:
-
-            add_abonent(&i, &head, &tail);
-            break;
-        case 2:
-            delete_abonent(&i, &head, &tail);
-            break;
-        case 3:
-            look_abonent(&head);
-            break;
-        case 4:
-            print(&head);
-            break;
-        default:
-            break;
+            case 1: add_abonent(&i, &head, &tail); break;
+            case 2: delete_abonent(&i, &head, &tail); break;
+            case 3: look_abonent(&head); break;
+            case 4: print(&head); break;
+            default: break;
         }
     }
     Node *current = head;

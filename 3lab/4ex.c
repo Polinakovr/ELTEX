@@ -25,7 +25,6 @@ int main()
         count = 0;
         for (int j = 0; j < len1; j++)
         {
-
             if (arr[i + j] == arr1[j])
             {
                 count++;

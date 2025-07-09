@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 void triangle(int p)
 {
     int arr3[p][p];
@@ -64,8 +64,10 @@ void snake(int n)
             left++;
         }
     }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
             printf("%d ", arr3[i][j]);
         }
         printf("\n");

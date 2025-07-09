@@ -1,8 +1,8 @@
 #ifndef __LIBRARY__
 #define __LIBRARY__
+#include <malloc.h>
 #include <stdio.h>
 #include <string.h>
-#include <malloc.h>
 typedef struct
 {
     char name[10];

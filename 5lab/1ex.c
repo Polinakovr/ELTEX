@@ -23,7 +23,8 @@ void add_abonent(int *i, struct abonent *directory)
         (*i)++;
     }
 }
-void delete_abonent(struct abonent *directory){
+void delete_abonent(struct abonent *directory)
+{
     char dir_name[10];
     char dir_secondname[10];
     printf("Введите данные Имя и Фамилию, чтобы удалить абонента\n ");
@@ -42,7 +43,8 @@ void delete_abonent(struct abonent *directory){
             }
     }
 }
-void look_abonent(struct abonent *directory){
+void look_abonent(struct abonent *directory)
+{
     char dir1_name[10];
     printf("Введите  Имя , чтобы найти абонента \n");
     printf("Имя \n");
@@ -58,10 +60,10 @@ void look_abonent(struct abonent *directory){
         }
     }
 }
-void print(struct abonent *directory,int *i){
+void print(struct abonent *directory, int *i)
+{
     for (int j = 0; j <= (*i) - 1; j++)
     {
-
         printf("Имя: %s ", directory[j].name);
         printf("Фамилия: %s ", directory[j].second_name);
         printf("Телефон: %s ", directory[j].tel);
@@ -70,33 +72,23 @@ void print(struct abonent *directory,int *i){
 }
 int main()
 {
-
     int x = 1;
     int i = 0;
     struct abonent directory[100] = {{0}};
     while (x != 5 && x >= 1 && x <= 4)
     {
-        printf(" 1) Добавить абонента \n 2) Удалить абонента \n 3) Поиск абонентов по имени \n 4) Вывод всех записей \n 5) Выход");
+        printf(" 1) Добавить абонента \n 2) Удалить абонента \n 3) Поиск абонентов по имени \n 4) Вывод всех записей "
+               "\n 5) Выход");
         x = 0;
         scanf("\n %d", &x);
 
         switch (x)
         {
-        case 1:
-
-            add_abonent(&i, directory);
-            break;
-        case 2:
-            delete_abonent(directory);
-            break;
-        case 3:
-          look_abonent(directory);
-            break;
-        case 4:
-          print(directory,&i);
-            break;
-        default:
-            break;
+            case 1: add_abonent(&i, directory); break;
+            case 2: delete_abonent(directory); break;
+            case 3: look_abonent(directory); break;
+            case 4: print(directory, &i); break;
+            default: break;
         }
     }
     return 0;
