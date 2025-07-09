@@ -1,6 +1,6 @@
 #include "drawpanel.h"
-extern int current_now ;
-extern int file_count ;
+extern int current_now;
+extern int file_count;
 void draw_panel(WINDOW *win, int is_top, const char *tittle)
 {
     werase(win);

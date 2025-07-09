@@ -1,4 +1,5 @@
 #include "initpanels.h"
+
 #include <stdlib.h>
 void init_panels(int panel_width, int panel_height)
 {
@@ -13,7 +14,6 @@ void init_panels(int panel_width, int panel_height)
     left.filelist = malloc(sizeof(file) * 20);
     if (left.filelist == NULL)
     {
-
         printw("Память не выделилась");
         refresh();
         endwin();
@@ -30,7 +30,6 @@ void init_panels(int panel_width, int panel_height)
     right.filelist = malloc(sizeof(file) * 20);
     if (right.filelist == NULL)
     {
-
         printw("Память не выделилась");
         refresh();
         free(left.filelist);

@@ -1,39 +1,47 @@
-#include "listdirectory.h"
 #include "drawpanel.h"
 #include "initpanels.h"
-#include <stdlib.h>
-#include <ncurses.h>
-#include <string.h>
+#include "listdirectory.h"
+
 #include <dirent.h>
+#include <ncurses.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
 Panel left, right;
 Panel *active_panel;
 
-void free_list(Panel p) {
-    for (int i = 0; i < p.file_count; i++) {
+void free_list(Panel p)
+{
+    for (int i = 0; i < p.file_count; i++)
+    {
         free(p.filelist[i].filename);
         free(p.filelist[i].modify_time);
     }
     free(p.filelist);
 }
 
-void switchactive() {
-    if (active_panel == &left) {
+void switchactive()
+{
+    if (active_panel == &left)
+    {
         left.active = 0;
         right.active = 1;
         active_panel = &right;
-    } else {
+    }
+    else
+    {
         right.active = 0;
         left.active = 1;
         active_panel = &left;
     }
 }
 
-int main() {
+int main()
+{
     initscr();
     keypad(stdscr, TRUE);
     clear();
@@ -41,7 +49,8 @@ int main() {
     noecho();
     curs_set(0);
 
-    if (!has_colors()) {
+    if (!has_colors())
+    {
         printw("Терминал не поддерживает цвета");
         refresh();
         endwin();
@@ -67,7 +76,8 @@ int main() {
     strcpy(left.cwd, left_cwd);
     strcpy(right.cwd, right_cwd);
 
-    while (1) {
+    while (1)
+    {
         draw_panel(win_top, 1, "LEFT  FILE  COMMAND  OPTIONS  RIGHT");
         draw_panel(left.win, 0, left.cwd);
         draw_panel(right.win, 0, right.cwd);
@@ -76,55 +86,66 @@ int main() {
         listdirect(panel_height, &left);
         chdir(right_cwd);
         listdirect(panel_height, &right);
-        
-        if (active_panel == &left) {
+
+        if (active_panel == &left)
+        {
             chdir(left_cwd);
-        } else {
+        }
+        else
+        {
             chdir(right_cwd);
         }
 
         int c = getch();
-        if (c == 'q') break;
-
-        switch (c) {
-        case KEY_UP:
-            if (active_panel->current_now > 0) {
-                (active_panel->current_now)--;
-            }
+        if (c == 'q')
             break;
 
-        case KEY_DOWN:
-            if (active_panel->current_now < (active_panel->file_count) - 1) {
-                (active_panel->current_now)++;
-            }
-            break;
+        switch (c)
+        {
+            case KEY_UP:
+                if (active_panel->current_now > 0)
+                {
+                    (active_panel->current_now)--;
+                }
+                break;
 
-        case '\n':
-            if (active_panel->filelist[active_panel->current_now].is_dir) {
-                char new_path[PATH_MAX];
-                if (active_panel == &left) {
-                    snprintf(new_path, sizeof(new_path), "%s/%s", left_cwd, 
-                            active_panel->filelist[active_panel->current_now].filename);
-                    if (chdir(new_path) == 0) {
-                        getcwd(left_cwd, sizeof(left_cwd));
-                        strcpy(left.cwd, left_cwd);
-                        active_panel->current_now = 0;
+            case KEY_DOWN:
+                if (active_panel->current_now < (active_panel->file_count) - 1)
+                {
+                    (active_panel->current_now)++;
+                }
+                break;
+
+            case '\n':
+                if (active_panel->filelist[active_panel->current_now].is_dir)
+                {
+                    char new_path[PATH_MAX];
+                    if (active_panel == &left)
+                    {
+                        snprintf(new_path, sizeof(new_path), "%s/%s", left_cwd,
+                                 active_panel->filelist[active_panel->current_now].filename);
+                        if (chdir(new_path) == 0)
+                        {
+                            getcwd(left_cwd, sizeof(left_cwd));
+                            strcpy(left.cwd, left_cwd);
+                            active_panel->current_now = 0;
+                        }
                     }
-                } else {
-                    snprintf(new_path, sizeof(new_path), "%s/%s", right_cwd, 
-                            active_panel->filelist[active_panel->current_now].filename);
-                    if (chdir(new_path) == 0) {
-                        getcwd(right_cwd, sizeof(right_cwd));
-                        strcpy(right.cwd, right_cwd);
-                        active_panel->current_now = 0;
+                    else
+                    {
+                        snprintf(new_path, sizeof(new_path), "%s/%s", right_cwd,
+                                 active_panel->filelist[active_panel->current_now].filename);
+                        if (chdir(new_path) == 0)
+                        {
+                            getcwd(right_cwd, sizeof(right_cwd));
+                            strcpy(right.cwd, right_cwd);
+                            active_panel->current_now = 0;
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case '\t':
-            switchactive();
-            break;
+            case '\t': switchactive(); break;
         }
     }
 

@@ -1,15 +1,16 @@
 #ifndef _LIBRARY_LIST_
 #define _LIBRARY_LIST_
-#include <ncurses.h>
 #include "drawpanel.h"
-#include <string.h>
+
 #include <dirent.h>
+#include <ncurses.h>
 #include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <string.h>
-typedef struct {
+typedef struct
+{
     char *filename;
     long int size;
     char *modify_time;
