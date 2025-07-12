@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        lab: ['6lab', '7lab', '8lab', '9lab/1ex', '9lab/2ex']
+        lab: ['6lab', '7lab', '8lab', '9lab/1ex', '9lab/2ex', '10lab/1ex', '10lab/2ex' , '10lab/3ex']
     
     steps:
     - uses: actions/checkout@v4
@@ -45,6 +45,9 @@ jobs:
             ;;
           "9lab/2ex")
             echo -e "q\n" | ./test || true
+            ;;
+          "10lab/3ex")
+            echo -e "ls -l\nexit" | ./test || true
             ;;
         esac
 
