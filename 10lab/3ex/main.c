@@ -10,23 +10,36 @@ int main()
 
     char buffer[30];
     char *argv[10];
+    char *saveptr;
     while (1)
     {
         fgets(buffer, sizeof(buffer), stdin);
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL)
+        {
+            if (feof(stdin))
+            {
+                exit(0);
+            }
+            else
+            {
+                perror("Ошибка чтения ввода");
+                continue;
+            }
+        }
         buffer[strcspn(buffer, "\n")] = '\0';
         if (strcmp(buffer, "exit") == 0)
         {
             exit(0);
         }
 
-        char *token = strtok(buffer, " ");
+        char *token = strtok_r(buffer, " ", &saveptr);
 
         int i = 0;
-        while (token != NULL)
+        while (token != NULL && i < 9)
         {
             argv[i] = token;
             i++;
-            token = strtok(NULL, " ");
+            token = strtok_r(NULL, " ", &saveptr);
         }
         argv[i] = NULL;
         char buf[30] = "/bin/";
