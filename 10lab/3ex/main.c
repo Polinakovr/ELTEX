@@ -13,7 +13,6 @@ int main()
     char *saveptr;
     while (1)
     {
-        fgets(buffer, sizeof(buffer), stdin);
         if (fgets(buffer, sizeof(buffer), stdin) == NULL)
         {
             if (feof(stdin))
