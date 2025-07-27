@@ -12,17 +12,27 @@ int main()
 {
     char *str = "Hello!";
     char str1[10];
-    mqd_t queue = mq_open("queue_m", O_RDWR); /*Почитать про параметры*/
-    if (queue == -1)
+    mqd_t queuerecv = mq_open("/queue_m_send", O_RDONLY); /*Почитать про параметры*/
+    if (queuerecv == (mqd_t)-1)
     {
         perror("Error: entry queue");
         exit(EXIT_FAILURE);
-    } unsigned int priority=1;
-     if (mq_receive(queue, str1, 10, &priority) == -1)
+    }
+
+    unsigned int priority;
+    if (mq_receive(queuerecv, str1, 10, &priority) == -1)
     {
         perror("Error: receive message");
         exit(EXIT_FAILURE);
-    }if (mq_send(queue, str, 7, 2) == -1)
+    }
+    printf("%s", str1);
+    mqd_t queuesend = mq_open("/queue_m_recv", O_WRONLY);
+    if (queuesend == (mqd_t)-1)
+    {
+        perror("Error: entry queue");
+        exit(EXIT_FAILURE);
+    }
+    if (mq_send(queuesend, str, 7, 2) == -1)
     {
         perror("Error: send message");
         exit(EXIT_FAILURE);
