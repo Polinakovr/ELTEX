@@ -13,7 +13,7 @@
 #define MAX_NAME 15
 #define MAX_MESSAGE 50
 #define USER_NAME 20
-#define MAX_CLIENT 10 /*Добавить удаление клиента и решить когда сообщения надо ждать 4 секунды перед темкак отправить а то потеряются */
+#define MAX_CLIENT 10 
 
 struct chat {
     char name[USER_NAME];
