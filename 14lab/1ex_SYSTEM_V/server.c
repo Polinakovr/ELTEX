@@ -5,7 +5,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include <sys/types.h>
-#define SHM_SIZE 1024
+#define SHM_SIZE 128
 int main()
 {
     key_t key, keysemaphore;
