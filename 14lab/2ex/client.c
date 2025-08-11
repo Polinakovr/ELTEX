@@ -146,17 +146,14 @@ void clean()
     if (shm_fd >= 0)
     {
         close(shm_fd);
-        shm_unlink(SHM_N);
     }
     if (shm >= 0)
     {
         close(shm);
-        shm_unlink(SHM_M);
     }
     if (shm_count_fd >= 0)
     {
         close(shm_count_fd);
-        shm_unlink(SHM_COUNT);
     }
     if (win_message_users)
         delwin(win_message_users);
@@ -353,39 +350,62 @@ void *text_handler(void *arg)
 
         char messages[MAX_MESSAGE];
         echo();
-        int ret = mvwgetnstr(win_entry_message, 2, 11, messages, MAX_MESSAGE);
+        mvwgetnstr(win_entry_message, 2, 11, messages, MAX_MESSAGE);
         noecho();
-        if (ret == ERR)
-        {
-            continue; // Пропускаем, если ввод прерван таймаутом
-        }
 
         if (strcmp(messages, "exit") == 0)
         {
             running = false;
             sem_wait(sem_block_name);
-            shm_name[my_index].priority = 3;
-            shm_name[my_index].name[0] = '\0';
+            shm_name[my_index].priority = 3; // Пометить пользователя как вышедшего
             sem_post(sem_block_name);
-            sem_post(sem_cond_name);
-            clean(); // Уведомляем сервер об удалении пользователя
+            sem_post(sem_cond_name); // Уведомить обработчик имен
+            sem_wait(sem_user_count);
+            unsigned int uc = *shm_count;
+
+            sem_post(sem_user_count);
+
+            for (unsigned int i = 0; i < (uc + 2); i++)
+            {
+                sem_post(sem_cond_broadcast);
+                sem_post(sem_text_broadcast);
+            }
+
             break;
         }
         sem_wait(sem_text_block);
-        strncpy(shm_message[my_index].text, messages, MAX_MESSAGE - 1);
-        shm_message[my_index].text[MAX_MESSAGE - 1] = '\0';
-        sem_post(sem_text_block);
+        for (unsigned int i = 0; i < MAX_CLIENT; i++)
+        {
+            if (strcmp(shm_name[i].name, my_name) == 0 && shm_name[i].priority == 1)
+            {
+                strncpy(shm_message[i].text, messages, MAX_MESSAGE - 1);
+                shm_message[i].text[MAX_MESSAGE - 1] = '\0';
+
+                break;
+            }
+        }
+
         sem_post(sem_cond_text);
+        sem_post(sem_text_block);
     }
     return NULL;
 }
+
 void *message_listener(void *arg)
 {
     while (running)
     {
         sem_wait(sem_text_broadcast);
+        if (!running)
+        {
+            sem_post(sem_read_confirm);
+            break;
+        }
+        sem_wait(sem_user_count);
+        user_count = *shm_count;
+        sem_post(sem_user_count);
 
-        for (unsigned int i = 0; i < MAX_CLIENT; i++)
+        for (unsigned int i = 0; i < user_count; i++)
         {
             if (shm_name[i].priority == 1 && strlen(shm_message[i].text) > 0)
             {
@@ -416,7 +436,7 @@ void *official_handler(void *arg)
     shm_name[my_index].priority = 6;
     sem_post(sem_block_name);
     sem_post(sem_cond_name);
-    print_users(); // Первоначальное обновление списка пользователей
+    print_users();
     while (running)
     {
         sem_wait(sem_cond_broadcast);

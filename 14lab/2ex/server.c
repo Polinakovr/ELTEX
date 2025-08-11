@@ -2,13 +2,13 @@
 #include <fcntl.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
 #define MAX_NAME 15
 #define MAX_MESSAGE 50
 #define USER_NAME 20
@@ -51,6 +51,22 @@ sem_t *sem_cond_broadcast = NULL;
 sem_t *sem_text_broadcast = NULL;
 sem_t *sem_user_count = NULL;
 sem_t *sem_read_confirm = NULL;
+volatile sig_atomic_t keep_running = 1;
+
+void handle_signal(int sig)
+{
+printf("Получен сигнал для завершения работы\n");
+keep_running = 0;
+// Unblock threads waiting on semaphores
+sem_post(sem_cond_name);
+sem_post(sem_cond_text);
+sem_post(sem_block_name);
+sem_post(sem_user_count);
+sem_post(sem_text_block);
+sem_post(sem_cond_broadcast);
+sem_post(sem_text_broadcast);
+sem_post(sem_read_confirm);
+}
 
 void shm_init()
 {
@@ -213,8 +229,7 @@ void clean()
 
 void *name_handler(void *arg)
 {
-    printf("Сервер: Запущен обработчик имен\n");
-    while (1)
+    while (keep_running)
     {
         printf("Сервер: Ожидание уведомления о новом пользователе...\n");
         sem_wait(sem_cond_name);
@@ -242,6 +257,18 @@ void *name_handler(void *arg)
                 printf("Сервер: Пользователь %s на индексе %d вышел\n", shm_name[i].name, i);
                 shm_name[i].priority = 0;
                 shm_name[i].name[0] = '\0';
+                for (int j = i; j < MAX_CLIENT - 1; j++)
+                {
+                    if (shm_name[j + 1].priority == 1)
+                    {
+                        memcpy(&shm_name[j], &shm_name[j + 1], sizeof(struct users));
+                        memcpy(&shm_message[j], &shm_message[j + 1], sizeof(struct message));
+                        shm_name[j].priority = 1;
+                        shm_name[j + 1].priority = 0;
+                        shm_name[j + 1].name[0] = '\0';
+                        memset(shm_message[j + 1].text, 0, MAX_MESSAGE);
+                    }
+                }
                 (*shm_count)--;
                 count = *shm_count;
                 for (int j = 0; j < count; j++)
@@ -255,15 +282,16 @@ void *name_handler(void *arg)
         sem_post(sem_user_count);
         sem_post(sem_block_name);
     }
+    printf("Сервер: Обработчик сообщений завершает работу\n");
     return NULL;
 }
 void *text_handler(void *arg)
 {
-    while (1)
+    while (keep_running)
     {
         sem_wait(sem_cond_text);
         printf("Сервер: Получено новое сообщение\n");
-      
+
         sem_wait(sem_user_count);
         count = *shm_count;
         sem_post(sem_user_count);
@@ -285,10 +313,13 @@ void *text_handler(void *arg)
             }
         }
     }
+    printf("Сервер: Обработчик сообщений завершает работу\n");
     return NULL;
 }
 int main()
 {
+    signal(SIGINT, handle_signal);
+    signal(SIGTERM, handle_signal);
     shm_init();
     pthread_t text_thread, name_thread;
     if (pthread_create(&text_thread, NULL, text_handler, NULL) != 0)
