@@ -55,17 +55,16 @@ volatile sig_atomic_t keep_running = 1;
 
 void handle_signal(int sig)
 {
-printf("Получен сигнал для завершения работы\n");
-keep_running = 0;
-// Unblock threads waiting on semaphores
-sem_post(sem_cond_name);
-sem_post(sem_cond_text);
-sem_post(sem_block_name);
-sem_post(sem_user_count);
-sem_post(sem_text_block);
-sem_post(sem_cond_broadcast);
-sem_post(sem_text_broadcast);
-sem_post(sem_read_confirm);
+    printf("Получен сигнал для завершения работы\n");
+    keep_running = 0;
+    sem_post(sem_cond_name);
+    sem_post(sem_cond_text);
+    sem_post(sem_block_name);
+    sem_post(sem_user_count);
+    sem_post(sem_text_block);
+    sem_post(sem_cond_broadcast);
+    sem_post(sem_text_broadcast);
+    sem_post(sem_read_confirm);
 }
 
 void shm_init()
