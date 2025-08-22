@@ -1,4 +1,4 @@
-all:localTCPclient localTCPserver
+all:localTCPclient localTCPserver localUDPclient localUDPserver
 localTCPclient: localTCPclient.o
 		gcc -Wall -o $@ $^
 
@@ -10,5 +10,16 @@ localTCPserver.o: localTCPserver.c
 
 localTCPclient.o: localTCPclient.c
 		gcc -Wall -c $< 
+localUDPclient: localUDPclient.o
+		gcc -Wall -o $@ $^
+
+localUDPserver: localUDPserver.o
+		gcc -Wall -o $@ $^ -g 
+
+localUDPserver.o: localUDPserver.c
+		gcc -Wall -c $< 
+
+localUDPclient.o: localUDPclient.c
+		gcc -Wall -c $< 
 clean:
-		rm -rf *.o localTCPclient localTCPserver
+		rm -rf *.o localTCPclient localTCPserver localUDPclient localUDPserver
