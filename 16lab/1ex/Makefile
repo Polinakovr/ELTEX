@@ -1,4 +1,4 @@
-all:localTCPclient localTCPserver localUDPclient localUDPserver inetTCPserver inetTCPclient
+all:localTCPclient localTCPserver localUDPclient localUDPserver inetTCPserver inetTCPclient inetUDPclient inetUDPserver
 localTCPclient: localTCPclient.o
 		gcc -Wall -o $@ $^
 
@@ -33,6 +33,17 @@ inetTCPserver.o: inetTCPserver.c
 
 inetTCPclient.o: inetTCPclient.c
 		gcc -Wall -c $< 
-		
+
+inetUDPclient: inetUDPclient.o
+		gcc -Wall -o $@ $^
+
+inetUDPserver: inetUDPserver.o
+		gcc -Wall -o $@ $^ -g 
+
+inetUDPserver.o: inetUDPserver.c
+		gcc -Wall -c $< 
+
+inetUDPclient.o: inetUDPclient.c
+		gcc -Wall -c $< 	
 clean:
-		rm -rf *.o localTCPclient localTCPserver localUDPclient localUDPserver inetTCPserver inetTCPclient
+		rm -rf *.o localTCPclient localTCPserver localUDPclient localUDPserver inetTCPserver inetTCPclient inetUDPclient inetUDPserver
