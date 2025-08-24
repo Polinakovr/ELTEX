@@ -43,4 +43,5 @@ int main()
         exit(EXIT_FAILURE);
     }
     printf("%s",buffer1);
+    close(socketfd);
 }

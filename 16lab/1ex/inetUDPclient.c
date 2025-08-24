@@ -39,4 +39,5 @@ int main()
     }
 
     printf("%s",buffer1);
+    close(socketfd);
 }
