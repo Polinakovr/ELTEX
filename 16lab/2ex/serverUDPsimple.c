@@ -12,6 +12,7 @@
 #define PORT 8080
 #define SIZE 80
 int socketfd;
+int newsocketfd;
 void signal_handler(int sig)
 {
     close(socketfd);
@@ -26,24 +27,37 @@ void str_time(char *buffer)
     strftime(buffer, SIZE, "%Y-%m-%d %H:%M:%S", timeinfo);
 }
 void *handler_client(void *arg)
-{   
+{
     char buffer[SIZE];
-    int newsockefd = *(int *)arg;
+     struct sockaddr_in newserver;
+    struct sockaddr_in client = *(struct sockaddr_in *)arg;
+    if ((newsocketfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        printf("%s", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    memset(&newserver, 0, sizeof(newserver));
+    newserver.sin_family = AF_INET;
+    inet_pton(AF_INET, "127.0.0.1", &newserver.sin_addr);
+    int port = port++;
+    newserver.sin_port = htons(port);
+   
     str_time(buffer);
-    if ((send(newsockefd, buffer, sizeof(buffer), 0)) == -1)
+    if ((sendto(newsocketfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client, sizeof(client))) == -1)
     {
         printf("%s", strerror(errno));
     }
-    close(newsockefd);
+    printf("Обработал нового клиента\n");
     return NULL;
 }
 int main()
 {
     struct sigaction sa;
+    int port = PORT;
     sa.sa_handler = &signal_handler;
     sigaction(SIGINT, &sa, NULL);
     struct sockaddr_in server, client;
-    if ((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((socketfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
         printf("%s", strerror(errno));
         exit(EXIT_FAILURE);
@@ -61,25 +75,20 @@ int main()
         close(socketfd);
         exit(EXIT_FAILURE);
     }
-    if (listen(socketfd, 5) == -1)
-    {
-        printf("%s", strerror(errno));
-        close(socketfd);
-        exit(EXIT_FAILURE);
-    }
     while (1)
     {
-        int newsocket;
         pthread_t thread;
-        newsocket = accept(socketfd, (struct sockaddr *)&client, &client_len);
-        if (newsocket == -1)
+        char buffer[SIZE] = "\0";
+        socklen_t client_len = sizeof(client);
+        if (recvfrom(socketfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client, &client_len) == -1)
         {
-            if (errno = EINTR)
-            {
-                break;
-            }
+            printf("%s", strerror(errno));
+            close(socketfd);
+            exit(EXIT_FAILURE);
         }
-        pthread_create(&thread, NULL, &handler_client,(void *) &newsocket);
-        pthread_detach(thread);
+        printf("Увидел нового клиента\n");
+        pthread_create(&thread, NULL, &handler_client, (void *)&client);
+        pthread_join(thread, NULL);
+        close(newsocketfd);
     }
 }
