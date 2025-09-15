@@ -1,6 +1,6 @@
 all: client server
 client: client.o
-		gcc -Wall -o $@ $<
+		gcc -Wall -o $@ $< -lc
 
 client.o:client.c
 		gcc -Wall -c $<
