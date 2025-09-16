@@ -44,7 +44,7 @@ int main()
     }
     memset(&server, 0, sizeof(server));
     server.sll_family = AF_PACKET;
-    server.sll_ifindex = if_nametoindex("eth0");
+    server.sll_ifindex = if_nametoindex("enp0s8");
     server.sll_halen = 6;
     server.sll_addr[0] = 0x08;
     server.sll_addr[1] = 0x00;
@@ -57,7 +57,7 @@ int main()
     socklen_t server_len = sizeof(server);
     char packets[ETH_HEADER + sizeof(struct iphdr) + sizeof(struct udphdr) + sizeof(buffer1)];
     unsigned int dst[6] = {0x08, 0x00, 0x27, 0xe9, 0x13, 0xea};
-   unsigned int src[6] = {0x08,0x00,0x27,0xa4,0x81,0xf9};
+    unsigned int src[6] = {0x08, 0x00, 0x27, 0xd3, 0x81, 0x7f};
     memcpy(packets, dst, 6);
     memcpy(packets + 6, src, 6);
     unsigned short ethertype = htons(0x0800);
@@ -71,17 +71,17 @@ int main()
     headerip->ttl = 64;
     headerip->id = htons(1234);
     headerip->protocol = IPPROTO_UDP;
-
-    inet_pton(AF_INET, "192.168.56.1", &headerip->saddr);
+    inet_pton(AF_INET, "192.168.56.102", &headerip->saddr);
     inet_pton(AF_INET, "192.168.56.101", &headerip->daddr);
     headerip->check = checksum(headerip);
-    struct udphdr *header = (struct udphdr *)(packets + ETH_HEADER + sizeof(struct iphdr));
+
+   struct udphdr *header = (struct udphdr *)(packets + ETH_HEADER + sizeof(struct iphdr));
     header->source = htons(PORT_SRC);
     header->dest = htons(PORT);
     header->len = htons(sizeof(struct udphdr) + sizeof(buffer1));
     header->check = 0;
 
-    memcpy(packets + ETH_HEADER + sizeof(struct udphdr) + sizeof(struct iphdr), buffer1, sizeof(buffer1));
+   memcpy(packets + ETH_HEADER + sizeof(struct iphdr) + sizeof(struct udphdr), buffer1, sizeof(buffer1));
     char packetsrecv[ETH_HEADER + sizeof(struct iphdr) + sizeof(struct udphdr) + sizeof(buffer)];
     if ((sendto(socketfd, packets, sizeof(packets), 0, (struct sockaddr *)&server, server_len)) == -1)
     {
@@ -104,7 +104,7 @@ int main()
         struct udphdr *headrerec = (struct udphdr *)(packetsrecv + ETH_HEADER + sizeof(struct iphdr));
         if (ntohs(headrerec->dest) == PORT_SRC)
         {
-            char *data = (char *)(packetsrecv + ETH_HEADER + +sizeof(struct iphdr) + sizeof(struct udphdr));
+            char *data = (char *)(packetsrecv + ETH_HEADER  +sizeof(struct iphdr) + sizeof(struct udphdr));
             int data_length = recvsize - ETH_HEADER - sizeof(struct iphdr) - sizeof(struct udphdr);
             char msg[SIZE];
             memcpy(msg, data, data_length);
